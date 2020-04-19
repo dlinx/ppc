@@ -1,9 +1,10 @@
 kind: pipeline
 type: docker
 name: default
-
-- name: client
-  image: node
-  commands:
-  - npm install
-  - npm run build
+steps:
+  - name: client
+    image: node
+    commands:
+      - cd ppc-client
+      - npm install
+      - npm run build
