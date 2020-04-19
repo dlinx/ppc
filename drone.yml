@@ -7,4 +7,3 @@ name: default
   commands:
   - npm install
   - npm run build
-
