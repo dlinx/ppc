@@ -13,6 +13,7 @@ import {
 import { Delete, Edit, PersonAdd } from "@material-ui/icons";
 import { RouteComponentProps } from "react-router-dom";
 import EmployeeModal from "../../../components/EmployeeModal/EmployeeModal";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 
 const useStyles = makeStyles({
   container: {
@@ -37,6 +38,8 @@ interface Employee {
 const EmployeeList: React.FC<Props> = (props) => {
   const classes = useStyles();
   const [users, setUsers] = useState<Employee[]>([]);
+  const [deleteCache, setDeleteCache] = useState("");
+  const [confirmStatus, setConfirmStatus] = useState(false);
 
   const [empPopup, setEmpPopup] = useState<{
     isOpen: boolean;
@@ -58,8 +61,14 @@ const EmployeeList: React.FC<Props> = (props) => {
   }, []);
 
   const deleteUser = (id: string) => {
-    console.log(`Delete User ${id}`);
+    setDeleteCache(id);
+    setConfirmStatus(true);
   };
+
+  const onDeleteConfirmation = (result: boolean) => {
+    setConfirmStatus(false);
+  };
+
   const editEmployee = (emp: Employee) => {
     setEmpPopup({ data: emp, isOpen: true });
   };
@@ -69,6 +78,7 @@ const EmployeeList: React.FC<Props> = (props) => {
       pathname: `/employees/${id}`,
     });
   };
+
   return (
     <>
       <Paper className={classes.container} elevation={3}>
@@ -116,6 +126,11 @@ const EmployeeList: React.FC<Props> = (props) => {
         open={empPopup.isOpen}
         data={empPopup.data}
         closePopup={() => setEmpPopup({ isOpen: false })}
+      />
+      <ConfirmDialog
+        dialogStatus={confirmStatus}
+        onClose={onDeleteConfirmation}
+        message={`Do you want to delete employee with ID ${deleteCache}? After confirmation, you can not reverse this process.`}
       />
     </>
   );
