@@ -24,7 +24,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     transform: "translate(-50%, -50%)",
     padding: "20px",
   },
-  loginContainer: {},
+  loginContainer: {
+    
+  },
   margin: {
     margin: theme.spacing(1),
   },
