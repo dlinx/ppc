@@ -14,6 +14,7 @@ import {
 } from "@material-ui/core";
 import MenuDrawer from "./components/Drawer/Drawer";
 import { Menu } from "@material-ui/icons";
+import EmployeeInfo from "./pages/employees/info/EmployeeInfo";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -59,7 +60,7 @@ function App() {
         <Switch>
           <Route path="/review-requests" exact></Route>
           <Route path="/employees" component={EmployeeList} exact />
-          <Route path="/employees/:id" exact></Route>
+          <Route path="/employees/:id" component={EmployeeInfo} exact></Route>
           <Route path="/login" component={Login}></Route>
           <Route path="/"></Route>
         </Switch>
