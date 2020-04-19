@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Login from "./pages/login/Login";
 import EmployeeList from "./pages/employees/list/EmployeeList";
@@ -7,7 +7,6 @@ import {
   Toolbar,
   IconButton,
   makeStyles,
-  createStyles,
   Typography,
   Button,
   Theme,
@@ -15,23 +14,24 @@ import {
 import MenuDrawer from "./components/Drawer/Drawer";
 import { Menu } from "@material-ui/icons";
 import EmployeeInfo from "./pages/employees/info/EmployeeInfo";
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    menuButton: {
-      marginRight: theme.spacing(2),
-    },
-    title: {
-      flexGrow: 1,
-    },
-  })
-);
+import { LoaderContext } from "./utils/Contexts";
+import Loader from "./components/Loader/Loader";
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+  },
+}));
 
 function App() {
   const classes = useStyles();
   const [drawerState, setDrawerState] = useState(false);
+  const isLoading = useContext(LoaderContext);
 
   return (
     <>
@@ -65,6 +65,7 @@ function App() {
           <Route path="/"></Route>
         </Switch>
       </Router>
+      {isLoading > 0 && <Loader />}
     </>
   );
 }

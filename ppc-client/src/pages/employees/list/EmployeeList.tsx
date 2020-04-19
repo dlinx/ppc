@@ -14,6 +14,7 @@ import { Delete, Edit, PersonAdd } from "@material-ui/icons";
 import { RouteComponentProps } from "react-router-dom";
 import EmployeeModal from "../../../components/EmployeeModal/EmployeeModal";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
+import InfoDialog from "../../../components/InfoDialog/InfoDialog";
 
 const useStyles = makeStyles({
   container: {
@@ -40,6 +41,7 @@ const EmployeeList: React.FC<Props> = (props) => {
   const [users, setUsers] = useState<Employee[]>([]);
   const [deleteCache, setDeleteCache] = useState("");
   const [confirmStatus, setConfirmStatus] = useState(false);
+  const [info, setInfo] = useState({ visible: false, message: "" });
 
   const [empPopup, setEmpPopup] = useState<{
     isOpen: boolean;
@@ -67,10 +69,24 @@ const EmployeeList: React.FC<Props> = (props) => {
 
   const onDeleteConfirmation = (result: boolean) => {
     setConfirmStatus(false);
+    if (result) setInfo({ message: "Employee Deleted", visible: true });
   };
 
   const editEmployee = (emp: Employee) => {
     setEmpPopup({ data: emp, isOpen: true });
+  };
+
+  const onEmployeeUpdate = (result: boolean) => {
+    if (result) {
+      const { data } = empPopup;
+      const message = data
+        ? `Employee Information updated.`
+        : `New employee record created.`;
+      setEmpPopup({ isOpen: false });
+      setInfo({ message: message, visible: true });
+    } else {
+      setEmpPopup({ isOpen: false });
+    }
   };
 
   const showUser = (id: string) => {
@@ -125,12 +141,17 @@ const EmployeeList: React.FC<Props> = (props) => {
       <EmployeeModal
         open={empPopup.isOpen}
         data={empPopup.data}
-        closePopup={() => setEmpPopup({ isOpen: false })}
+        closePopup={(result) => onEmployeeUpdate(result)}
       />
       <ConfirmDialog
         dialogStatus={confirmStatus}
         onClose={onDeleteConfirmation}
         message={`Do you want to delete employee with ID ${deleteCache}? After confirmation, you can not reverse this process.`}
+      />
+      <InfoDialog
+        dialogStatus={info.visible}
+        message={info.message}
+        onClose={() => setInfo({ visible: false, message: "" })}
       />
     </>
   );
