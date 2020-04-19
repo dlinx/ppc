@@ -1,11 +1,8 @@
 import React, { useCallback, useState, useEffect } from "react";
 import {
-  Modal,
   Dialog,
   DialogTitle,
-  Typography,
   DialogContent,
-  DialogContentText,
   Button,
   DialogActions,
   TextField,
@@ -37,10 +34,11 @@ const EmployeeModal: React.FC<Props> = (props) => {
 
   const cancel = useCallback(() => {
     props.closePopup();
-  }, []);
+  }, [props]);
+
   const save = useCallback(() => {
     props.closePopup();
-  }, []);
+  }, [props]);
 
   const onTextChange = (field: string, value: string) => {
     setNewEmployee((emp) => ({
