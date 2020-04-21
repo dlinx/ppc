@@ -42,7 +42,7 @@ const EmployeeList: React.FC<Props> = (props) => {
   const [deleteCache, setDeleteCache] = useState("");
   const [confirmStatus, setConfirmStatus] = useState(false);
   const [info, setInfo] = useState({ visible: false, message: "" });
-
+  const [isSaving, setIsSaving] = useState(false);
   const [empPopup, setEmpPopup] = useState<{
     isOpen: boolean;
     data?: Employee;
@@ -78,12 +78,16 @@ const EmployeeList: React.FC<Props> = (props) => {
 
   const onEmployeeUpdate = (result: boolean) => {
     if (result) {
-      const { data } = empPopup;
-      const message = data
-        ? `Employee Information updated.`
-        : `New employee record created.`;
-      setEmpPopup({ isOpen: false });
-      setInfo({ message: message, visible: true });
+      setIsSaving(true);
+      setTimeout(() => {
+        const { data } = empPopup;
+        const message = data
+          ? `Employee Information updated.`
+          : `New employee record created.`;
+        setInfo({ message: message, visible: true });
+        setEmpPopup({ isOpen: false });
+        setIsSaving(false)
+      }, 1000);
     } else {
       setEmpPopup({ isOpen: false });
     }
@@ -142,6 +146,7 @@ const EmployeeList: React.FC<Props> = (props) => {
         open={empPopup.isOpen}
         data={empPopup.data}
         closePopup={(result) => onEmployeeUpdate(result)}
+        isClosing={isSaving}
       />
       <ConfirmDialog
         dialogStatus={confirmStatus}

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -7,13 +7,34 @@ import {
   DialogActions,
   TextField,
   makeStyles,
+  CircularProgress,
+  Theme,
 } from "@material-ui/core";
+import { green } from "@material-ui/core/colors";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   margins: {
     marginBottom: "10px",
   },
-});
+  wrapper: {
+    margin: theme.spacing(1),
+    position: "relative",
+  },
+  buttonProgress: {
+    color: green[500],
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -12,
+    marginLeft: -12,
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[700],
+    },
+  },
+}));
 interface Employee {
   id?: string;
   name?: string;
@@ -23,6 +44,7 @@ interface Employee {
 interface Props {
   open: boolean;
   data?: Employee;
+  isClosing?: boolean;
   closePopup: (result: boolean) => void;
 }
 const EmployeeModal: React.FC<Props> = (props) => {
@@ -90,14 +112,20 @@ const EmployeeModal: React.FC<Props> = (props) => {
         <Button color="primary" onClick={() => props.closePopup(false)}>
           Cancel
         </Button>
-        <Button
-          color="primary"
-          autoFocus
-          variant="contained"
-          onClick={() => props.closePopup(true)}
-        >
-          Save
-        </Button>
+        <div className={classes.wrapper}>
+          <Button
+            color="primary"
+            autoFocus
+            variant="contained"
+            onClick={() => props.closePopup(true)}
+            disabled={props.isClosing}
+          >
+            Save
+          </Button>
+          {props.isClosing && (
+            <CircularProgress size={24} className={classes.buttonProgress} />
+          )}
+        </div>
       </DialogActions>
     </Dialog>
   );

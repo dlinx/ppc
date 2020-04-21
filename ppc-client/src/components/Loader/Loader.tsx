@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { LoopOutlined } from "@material-ui/icons";
+import { LoaderContext } from "../../utils/Contexts";
 
 const useStyles = makeStyles({
   loaderContainer: {
@@ -27,9 +28,15 @@ const useStyles = makeStyles({
 const Loader = () => {
   const classes = useStyles();
   return (
-    <div className={classes.loaderContainer}>
-      <LoopOutlined className={classes.loader} />
-    </div>
+    <LoaderContext.Consumer>
+      {({ pendingActions }) =>
+        pendingActions ? (
+          <div className={classes.loaderContainer}>
+            <LoopOutlined className={classes.loader} />
+          </div>
+        ) : null
+      }
+    </LoaderContext.Consumer>
   );
 };
 export default Loader;
