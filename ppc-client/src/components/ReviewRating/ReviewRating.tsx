@@ -66,6 +66,9 @@ const ReviewRating: React.FC<Props> = (props) => {
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    width: "100%",
+  },
   margins: {
     marginBottom: "10px",
   },
@@ -95,10 +98,23 @@ interface IReviewFormProps {
 
 const ReviewForm: React.FC<IReviewFormProps> = (props) => {
   const classes = useStyles();
-  const [review, setReview] = useState<IReview>(props.review || {});
+  const [review, setReview] = useState<IReview>(
+    props.review || {
+      responsibility: 0,
+      learningAbility: 0,
+      creativity: 0,
+      punctuality: 0,
+      communication: 0,
+      comments: "",
+    }
+  );
 
   const onChange = (field: string, value: string | number | null) => {
-    setReview((r) => ({ ...r, [field]: value }));
+    setReview((r) => {
+      const c = { ...r, [field]: value };
+      console.log(1, c);
+      return c;
+    });
     if (props.onChange) props.onChange(review);
   };
 
@@ -107,12 +123,12 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
   };
 
   const onCancel = () => {
-    setReview({});
+    setReview((r) => ({}));
     if (props.onChange) props.onChange({});
   };
 
   return (
-    <Box>
+    <Box className={classes.root}>
       <ReviewRating
         name="Responsibility"
         value={review.responsibility}

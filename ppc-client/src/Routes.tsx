@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Login from "./pages/login/Login";
-import EmployeeList from "./pages/employees/list/EmployeeList";
+import Login from "./pages/Login/Login";
+import EmployeeList from "./pages/Employees/List/EmployeeList";
 import {
   AppBar,
   Toolbar,
@@ -13,7 +13,8 @@ import {
 } from "@material-ui/core";
 import MenuDrawer from "./components/Drawer/Drawer";
 import { Menu } from "@material-ui/icons";
-import EmployeeInfo from "./pages/employees/info/EmployeeInfo";
+import EmployeeInfo from "./pages/Employees/Info/EmployeeInfo";
+import ReviewRequests from "./pages/reviewRequests/ReviewRequests";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -55,7 +56,7 @@ function App() {
         </Toolbar>
       </AppBar>
       <Switch>
-        <Route path="/review-requests" exact></Route>
+        <Route path="/review-requests" component={ReviewRequests} exact></Route>
         <Route path="/employees" component={EmployeeList} exact />
         <Route path="/employees/:id" component={EmployeeInfo} exact></Route>
         <Route path="/login" component={Login}></Route>

@@ -19,10 +19,6 @@ interface Props extends RouteComponentProps<RouteParams> {}
 
 const EmployeeInfo: React.FC<Props> = (props) => {
   const classes = useStyles();
-  return (
-    <Paper className={classes.reviewForm}>
-      <ReviewForm />
-    </Paper>
-  );
+  return <Paper className={classes.reviewForm}></Paper>;
 };
 export default EmployeeInfo;
