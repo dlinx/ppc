@@ -1,0 +1,172 @@
+import React, { useState } from "react";
+import {
+  SentimentVeryDissatisfied,
+  SentimentDissatisfied,
+  SentimentSatisfied,
+  SentimentSatisfiedAlt,
+  SentimentVerySatisfied,
+} from "@material-ui/icons";
+import Rating, { IconContainerProps } from "@material-ui/lab/Rating";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  makeStyles,
+  Theme,
+} from "@material-ui/core";
+const customIcons: {
+  [index: string]: { icon: React.ReactElement; label: string };
+} = {
+  1: {
+    icon: <SentimentVeryDissatisfied />,
+    label: "Very Dissatisfied",
+  },
+  2: {
+    icon: <SentimentDissatisfied />,
+    label: "Dissatisfied",
+  },
+  3: {
+    icon: <SentimentSatisfied />,
+    label: "Neutral",
+  },
+  4: {
+    icon: <SentimentSatisfiedAlt />,
+    label: "Satisfied",
+  },
+  5: {
+    icon: <SentimentVerySatisfied />,
+    label: "Very Satisfied",
+  },
+};
+function IconContainer(props: IconContainerProps) {
+  const { value, ...other } = props;
+  return <span {...other}>{customIcons[value].icon}</span>;
+}
+
+interface Props {
+  name: string;
+  value?: number;
+  onChange?: (event: React.ChangeEvent<{}>, value: number | null) => void;
+}
+
+const ReviewRating: React.FC<Props> = (props) => {
+  return (
+    <Box component="fieldset" mb={3} borderColor="transparent">
+      <Typography component="legend">{props.children}</Typography>
+      <Rating
+        name={props.name}
+        value={props.value}
+        getLabelText={(value: number) => customIcons[value].label}
+        IconContainerComponent={IconContainer}
+        onChange={props.onChange}
+      />
+    </Box>
+  );
+};
+
+const useStyles = makeStyles((theme: Theme) => ({
+  margins: {
+    marginBottom: "10px",
+  },
+  wrapper: {
+    margin: theme.spacing(1),
+    position: "relative",
+    display: "flex",
+    justifyContent: "flex-end",
+  },
+}));
+
+interface IReview {
+  responsibility?: number;
+  learningAbility?: number;
+  creativity?: number;
+  punctuality?: number;
+  communication?: number;
+  comments?: string;
+}
+
+interface IReviewFormProps {
+  review?: IReview;
+  isLoading?: boolean;
+  onChange?: (review: IReview) => void;
+  onSave?: (review: IReview) => void;
+}
+
+const ReviewForm: React.FC<IReviewFormProps> = (props) => {
+  const classes = useStyles();
+  const [review, setReview] = useState<IReview>(props.review || {});
+
+  const onChange = (field: string, value: string | number | null) => {
+    setReview((r) => ({ ...r, [field]: value }));
+    if (props.onChange) props.onChange(review);
+  };
+
+  const onSave = () => {
+    if (props.onSave) props.onSave(review);
+  };
+
+  const onCancel = () => {
+    setReview({});
+    if (props.onChange) props.onChange({});
+  };
+
+  return (
+    <Box>
+      <ReviewRating
+        name="Responsibility"
+        value={review.responsibility}
+        onChange={(e, val) => onChange("responsibility", val)}
+      >
+        Responsibility
+      </ReviewRating>
+      <ReviewRating
+        name="Learning_Ability"
+        value={review.learningAbility}
+        onChange={(e, val) => onChange("learningAbility", val)}
+      >
+        Learning Ability
+      </ReviewRating>
+      <ReviewRating
+        name="Creativity"
+        value={review.creativity}
+        onChange={(e, val) => onChange("creativity", val)}
+      >
+        Creativity
+      </ReviewRating>
+      <ReviewRating
+        name="Punctuality"
+        value={review.punctuality}
+        onChange={(e, val) => onChange("punctuality", val)}
+      >
+        Punctuality
+      </ReviewRating>
+      <ReviewRating
+        name="Communication"
+        value={review.communication}
+        onChange={(e, val) => onChange("communication", val)}
+      >
+        Communication
+      </ReviewRating>
+      <TextField
+        label="Additional Comments"
+        multiline
+        rows={4}
+        value={review.comments}
+        variant="outlined"
+        onChange={(e) => onChange("comments", e.target.value)}
+        fullWidth
+      />
+      <Box className={classes.wrapper}>
+        <Button variant="text" color="primary" onClick={() => onCancel()}>
+          Cancel
+        </Button>
+        <Button variant="contained" color="primary" onClick={onSave}>
+          Submit Review
+        </Button>
+      </Box>
+    </Box>
+  );
+};
+
+export default ReviewForm;
