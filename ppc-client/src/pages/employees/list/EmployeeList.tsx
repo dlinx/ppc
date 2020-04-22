@@ -9,14 +9,19 @@ import {
   IconButton,
   ListSubheader,
   Fab,
+  Tooltip,
+  ListItemIcon,
+  Checkbox,
+  Box,
+  Theme,
 } from "@material-ui/core";
-import { Delete, Edit, PersonAdd } from "@material-ui/icons";
+import { Delete, Edit, PersonAdd, RateReview } from "@material-ui/icons";
 import { RouteComponentProps } from "react-router-dom";
 import EmployeeModal from "../../../components/EmployeeModal/EmployeeModal";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import InfoDialog from "../../../components/InfoDialog/InfoDialog";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   container: {
     margin: "10px",
     padding: "10px",
@@ -26,7 +31,10 @@ const useStyles = makeStyles({
     right: "20px",
     position: "absolute",
   },
-});
+  margin: {
+    margin: theme.spacing(1),
+  },
+}));
 
 interface Props extends RouteComponentProps {}
 interface Employee {
@@ -39,7 +47,6 @@ interface Employee {
 const EmployeeList: React.FC<Props> = (props) => {
   const classes = useStyles();
   const [users, setUsers] = useState<Employee[]>([]);
-  const [deleteCache, setDeleteCache] = useState("");
   const [confirmStatus, setConfirmStatus] = useState(false);
   const [info, setInfo] = useState({ visible: false, message: "" });
   const [isSaving, setIsSaving] = useState(false);
@@ -47,6 +54,9 @@ const EmployeeList: React.FC<Props> = (props) => {
     isOpen: boolean;
     data?: Employee;
   }>({ isOpen: false });
+  const [selectedList, setSelectedList] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
   useEffect(() => {
     const u = [];
@@ -63,7 +73,6 @@ const EmployeeList: React.FC<Props> = (props) => {
   }, []);
 
   const deleteUser = (id: string) => {
-    setDeleteCache(id);
     setConfirmStatus(true);
   };
 
@@ -86,7 +95,7 @@ const EmployeeList: React.FC<Props> = (props) => {
           : `New employee record created.`;
         setInfo({ message: message, visible: true });
         setEmpPopup({ isOpen: false });
-        setIsSaving(false)
+        setIsSaving(false);
       }, 1000);
     } else {
       setEmpPopup({ isOpen: false });
@@ -97,6 +106,25 @@ const EmployeeList: React.FC<Props> = (props) => {
     props.history.push({
       pathname: `/employees/${id}`,
     });
+  };
+
+  const toggleCheckbox = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: string
+  ) => {
+    setSelectedList((o) => ({ ...o, [id]: !o[id] }));
+    e.stopPropagation();
+  };
+
+  const isSelectedAny = Object.values(selectedList).reduce(
+    (prev, cur) => prev || cur,
+    false
+  );
+
+  const deleteSelected = () => {
+    setConfirmStatus(true);
+    const ids = Object.keys(selectedList).filter((id) => selectedList[id]);
+    console.log("selected for delete", ids);
   };
 
   return (
@@ -114,34 +142,71 @@ const EmployeeList: React.FC<Props> = (props) => {
           {users &&
             users.map((emp) => (
               <ListItem key={emp.id} button onClick={() => showUser(emp.id)}>
+                <ListItemIcon>
+                  <Checkbox
+                    edge="start"
+                    checked={selectedList[emp.id] || false}
+                    tabIndex={-1}
+                    disableRipple
+                    onClick={(e) => toggleCheckbox(e, emp.id)}
+                  />
+                </ListItemIcon>
                 <ListItemText primary={emp.name} />
                 <ListItemSecondaryAction>
-                  <IconButton
-                    edge="end"
-                    aria-label="Edit"
-                    onClick={() => editEmployee(emp)}
-                  >
-                    <Edit />
-                  </IconButton>
-                  <IconButton
-                    edge="end"
-                    aria-label="Delete"
-                    onClick={() => deleteUser(emp.id)}
-                  >
-                    <Delete />
-                  </IconButton>
+                  <Tooltip title="Assign Reviewers">
+                    <IconButton
+                      edge="end"
+                      aria-label="Delete"
+                      onClick={() => deleteUser(emp.id)}
+                    >
+                      <RateReview />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Edit">
+                    <IconButton
+                      edge="end"
+                      aria-label="Edit"
+                      onClick={() => editEmployee(emp)}
+                    >
+                      <Edit />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <IconButton
+                      edge="end"
+                      aria-label="Delete"
+                      onClick={() => deleteUser(emp.id)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </Tooltip>
                 </ListItemSecondaryAction>
               </ListItem>
             ))}
         </List>
       </Paper>
-      <Fab
-        color="primary"
-        className={classes.btnCreateEmp}
-        onClick={() => setEmpPopup({ isOpen: true, data: undefined })}
-      >
-        <PersonAdd />
-      </Fab>
+      <Box className={classes.btnCreateEmp}>
+        {isSelectedAny && (
+          <Tooltip title="Delete selected employees">
+            <Fab
+              className={classes.margin}
+              color="primary"
+              onClick={() => deleteSelected()}
+            >
+              <Delete />
+            </Fab>
+          </Tooltip>
+        )}
+        <Tooltip title="Add new employee">
+          <Fab
+            color="primary"
+            className={classes.margin}
+            onClick={() => setEmpPopup({ isOpen: true, data: undefined })}
+          >
+            <PersonAdd />
+          </Fab>
+        </Tooltip>
+      </Box>
       <EmployeeModal
         open={empPopup.isOpen}
         data={empPopup.data}
@@ -151,7 +216,7 @@ const EmployeeList: React.FC<Props> = (props) => {
       <ConfirmDialog
         dialogStatus={confirmStatus}
         onClose={onDeleteConfirmation}
-        message={`Do you want to delete employee with ID ${deleteCache}? After confirmation, you can not reverse this process.`}
+        message={`Do you want to delete selected employee/s? After confirmation, you can not reverse this process.`}
       />
       <InfoDialog
         dialogStatus={info.visible}

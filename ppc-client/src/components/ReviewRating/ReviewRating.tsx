@@ -41,13 +41,14 @@ const customIcons: {
 };
 function IconContainer(props: IconContainerProps) {
   const { value, ...other } = props;
-  return <span {...other}>{customIcons[value].icon}</span>;
+  return <span {...other}>{customIcons[value]?.icon}</span>;
 }
 
 interface Props {
   name: string;
   value?: number;
   onChange?: (event: React.ChangeEvent<{}>, value: number | null) => void;
+  readonly?: boolean;
 }
 
 const ReviewRating: React.FC<Props> = (props) => {
@@ -57,9 +58,10 @@ const ReviewRating: React.FC<Props> = (props) => {
       <Rating
         name={props.name}
         value={props.value}
-        getLabelText={(value: number) => customIcons[value].label}
+        getLabelText={(value: number) => customIcons[value]?.label}
         IconContainerComponent={IconContainer}
         onChange={props.onChange}
+        readOnly={props.readonly}
       />
     </Box>
   );
@@ -94,6 +96,7 @@ interface IReviewFormProps {
   isLoading?: boolean;
   onChange?: (review: IReview) => void;
   onSave?: (review: IReview) => void;
+  readonly?: boolean;
 }
 
 const ReviewForm: React.FC<IReviewFormProps> = (props) => {
@@ -110,6 +113,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
   );
 
   const onChange = (field: string, value: string | number | null) => {
+    if (props.readonly) return;
     setReview((r) => {
       const c = { ...r, [field]: value };
       console.log(1, c);
@@ -133,6 +137,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
         name="Responsibility"
         value={review.responsibility}
         onChange={(e, val) => onChange("responsibility", val)}
+        readonly={props.readonly}
       >
         Responsibility
       </ReviewRating>
@@ -140,6 +145,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
         name="Learning_Ability"
         value={review.learningAbility}
         onChange={(e, val) => onChange("learningAbility", val)}
+        readonly={props.readonly}
       >
         Learning Ability
       </ReviewRating>
@@ -147,6 +153,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
         name="Creativity"
         value={review.creativity}
         onChange={(e, val) => onChange("creativity", val)}
+        readonly={props.readonly}
       >
         Creativity
       </ReviewRating>
@@ -154,6 +161,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
         name="Punctuality"
         value={review.punctuality}
         onChange={(e, val) => onChange("punctuality", val)}
+        readonly={props.readonly}
       >
         Punctuality
       </ReviewRating>
@@ -161,6 +169,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
         name="Communication"
         value={review.communication}
         onChange={(e, val) => onChange("communication", val)}
+        readonly={props.readonly}
       >
         Communication
       </ReviewRating>
@@ -172,15 +181,20 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
         variant="outlined"
         onChange={(e) => onChange("comments", e.target.value)}
         fullWidth
+        InputProps={{
+          readOnly: props.readonly,
+        }}
       />
-      <Box className={classes.wrapper}>
-        <Button variant="text" color="primary" onClick={() => onCancel()}>
-          Cancel
-        </Button>
-        <Button variant="contained" color="primary" onClick={onSave}>
-          Submit Review
-        </Button>
-      </Box>
+      {!props.readonly && (
+        <Box className={classes.wrapper}>
+          <Button variant="text" color="primary" onClick={() => onCancel()}>
+            Cancel
+          </Button>
+          <Button variant="contained" color="primary" onClick={onSave}>
+            Submit Review
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

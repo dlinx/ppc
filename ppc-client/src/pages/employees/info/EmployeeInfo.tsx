@@ -1,7 +1,6 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { Paper, makeStyles } from "@material-ui/core";
-import ReviewForm from "../../../components/ReviewRating/ReviewRating";
 
 const useStyles = makeStyles({
   reviewForm: {
