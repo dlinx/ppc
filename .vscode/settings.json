@@ -1,0 +1,10 @@
+{
+    "sqltools.connections": [
+        {
+            "database": "${workspaceFolder}/ppc-server/db/ppc-db.db.sqlite",
+            "dialect": "SQLite",
+            "name": "local"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

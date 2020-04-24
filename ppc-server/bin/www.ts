@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-import app, { createDBConnection } from '../app'
+import app from '../app'
 var debug = require('debug')('ppc-server:server');
 var http = require('http');
 
@@ -24,11 +24,11 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-createDBConnection().then(() => {
-  server.listen(port);
-  server.on('error', onError);
-  server.on('listening', onListening);
-})
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
 /**
  * Normalize a port into a number, string, or false.
  */

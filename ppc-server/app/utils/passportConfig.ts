@@ -22,7 +22,7 @@ const tempCredentials: ICredentials = {
 passport.use(new Strategy({
     usernameField: 'uid',
     passwordField: 'password'
-}, (uid, pass, cb) => {
+}, async (uid, pass, cb) => {
     if (tempCredentials[uid] && tempCredentials[uid].password === pass) {
         cb(null, {
             uid,

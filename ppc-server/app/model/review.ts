@@ -1,56 +1,68 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm'
-import { Employee } from './employee';
+const { Model, DataTypes } = require('sequelize');
+import Employee from "./employee";
+import { sequelize } from '../utils/db'
 
-interface IReview {
-    rid: string,
-    responsibility: number,
-    learningAbility: number,
-    creativity: number,
-    punctuality: number,
-    communication: number,
-    comments: string,
-    from: Employee,
-    to: Employee,
-}
+class Review extends Model { }
+Review.init({
+    rid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        unique: true,
+        primaryKey: true,
+    },
+    responsibility: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    learningAbility: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    creativity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    punctuality: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    communication: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    comments: {
+        type: DataTypes.STRING(200),
+        allowNull: false,
 
-@Entity()
-export class Review {
-    @PrimaryGeneratedColumn()
-    rid: string;
+    },
+    from: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: Employee,
+            key: 'uid'
+        }
+    },
+    to: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: Employee,
+            key: 'uid'
+        }
+    },
+}, {
+    sequelize,
+    modelName: 'review',
+    tableName: 'tbl_review',
+    timestamps: true,
+    updatedAt: 'updateTimestamp',
+})
 
-    @Column("varchar", { length: 50 })
-    responsibility: number
-
-    @Column("tinyint")
-    learningAbility: number
-
-    @Column("tinyint")
-    creativity: number
-
-    @Column("tinyint")
-    punctuality: number
-
-    @Column("tinyint")
-    communication: number
-
-    @Column("varchar", { length: 200 })
-    comments: string
-
-    @ManyToOne(Type => Employee, e => e.uid)
-    from: Employee
-
-    @ManyToOne(Type => Employee, e => e.uid)
-    to: Employee
-
-    constructor(params: IReview) {
-        this.rid = params.rid
-        this.responsibility = params.responsibility
-        this.learningAbility = params.learningAbility
-        this.creativity = params.creativity
-        this.punctuality = params.punctuality
-        this.communication = params.communication
-        this.comments = params.comments
-        this.from = params.from
-        this.to = params.to
-    }
-}
+export default Review

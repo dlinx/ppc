@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
-
-interface IEmployee {
+const { Sequelize, Model, DataTypes } = require('sequelize');
+import { sequelize } from '../utils/db'
+export interface IEmployee {
     uid: number,
     email: string,
     password: string,
@@ -8,28 +8,41 @@ interface IEmployee {
     isAdmin: boolean
 }
 
-@Entity()
-export class Employee {
-    @PrimaryGeneratedColumn()
-    uid: number;
+class Employee extends Model { }
+Employee.init({
+    uid: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        isUUID: true,
+        unique: true,
+        primaryKey: true,
+        defaultValue: Sequelize.UUIDV4
+    },
+    email: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        isEmail: true,
+        unique: true
+    },
+    password: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+    },
+    name: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+    },
+    isAdmin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+}, {
+    sequelize,
+    modelName: 'employee',
+    tableName: 'tbl_employee',
+    timestamps: true,
+    updatedAt: 'updateTimestamp',
+})
 
-    @Column()
-    email: string;
-
-    @Column()
-    password: string;
-
-    @Column()
-    name: string;
-
-    @Column()
-    isAdmin: boolean;
-
-    constructor({ uid, email, password, name, isAdmin }: IEmployee) {
-        this.uid = uid
-        this.email = email
-        this.password = password
-        this.name = name
-        this.isAdmin = isAdmin
-    }
-}
+export default Employee;
