@@ -13,14 +13,11 @@ router.post('/login', (req, res, next) => {
             if (err) {
                 res.send(err);
             }
-            const response = {
-                uid: user.uid,
-                isAdmin: user.isAdmin
-            }
-            const token = jwt.sign(response, 'your_jwt_secret', {
+
+            const token = jwt.sign(user, 'your_jwt_secret', {
                 expiresIn: '24h',
             });
-            return res.json({ user: response, token });
+            return res.json({ user, token });
         });
     })(req, res);
 });

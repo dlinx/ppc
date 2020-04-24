@@ -1,35 +1,18 @@
 import passport from 'passport'
 import { Strategy } from 'passport-local'
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt'
-
-interface ICredentials {
-    [uid: string]: {
-        password: string,
-        isAdmin: boolean
-    }
-}
-const tempCredentials: ICredentials = {
-    user: {
-        password: 'pass',
-        isAdmin: false
-    },
-    admin: {
-        password: 'pass',
-        isAdmin: true
-    }
-}
+import Employee from '../model/employee'
 
 passport.use(new Strategy({
-    usernameField: 'uid',
+    usernameField: 'email',
     passwordField: 'password'
-}, async (uid, pass, cb) => {
-    if (tempCredentials[uid] && tempCredentials[uid].password === pass) {
-        cb(null, {
-            uid,
-            ...tempCredentials[uid]
-        }, { message: `Logged In Successfully for : ${uid}` })
+}, async (email, password, cb) => {
+    const emp = await Employee.findOne({ where: { email, password } });
+    if (emp) {
+        const { email, uid, isAdmin, name, } = emp;
+        cb(null, { uid, email, isAdmin, name }, { message: `Logged In Successfully for : ${email}` })
     } else {
-        cb({ code: 401, message: 'Authentication Failed' }, null, { message: `Authentication failed for ${uid}` })
+        cb({ code: 401, message: 'Authentication Failed' }, null, { message: `Authentication failed for ${email}` })
     }
 }))
 

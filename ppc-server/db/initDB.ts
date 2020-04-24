@@ -12,7 +12,8 @@ const createAdminAccount = async () => {
     return await Employee.create({
         email: 'root@ppc.local',
         password: 'toor',
-        name: 'Root'
+        name: 'Root',
+        isAdmin: true
     })
 }
 
