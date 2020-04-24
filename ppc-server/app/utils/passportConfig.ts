@@ -18,21 +18,20 @@ const tempCredentials: ICredentials = {
         isAdmin: true
     }
 }
-export const configurePassport = () => {
-    passport.use(new Strategy({
-        usernameField: 'uid',
-        passwordField: 'password'
-    }, (uid, pass, cb) => {
-        if (tempCredentials[uid] && tempCredentials[uid].password === pass) {
-            cb(null, {
-                uid,
-                ...tempCredentials[uid]
-            }, { message: `Logged In Successfully for : ${uid}` })
-        } else {
-            cb({ code: 401, message: 'Authentication Failed' }, null, { message: `Authentication failed for ${uid}` })
-        }
-    }))
-}
+
+passport.use(new Strategy({
+    usernameField: 'uid',
+    passwordField: 'password'
+}, (uid, pass, cb) => {
+    if (tempCredentials[uid] && tempCredentials[uid].password === pass) {
+        cb(null, {
+            uid,
+            ...tempCredentials[uid]
+        }, { message: `Logged In Successfully for : ${uid}` })
+    } else {
+        cb({ code: 401, message: 'Authentication Failed' }, null, { message: `Authentication failed for ${uid}` })
+    }
+}))
 
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

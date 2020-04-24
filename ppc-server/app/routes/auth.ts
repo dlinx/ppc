@@ -7,10 +7,7 @@ const router = express.Router()
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', { session: false }, (err, user, info) => {
         if (err || !user) {
-            return res.status(400).json({
-                code: 400,
-                message: 'Something went wrong'
-            })
+            return res.status(400).json(err)
         }
         req.login(user, { session: false }, (err) => {
             if (err) {
@@ -22,7 +19,6 @@ router.post('/login', (req, res, next) => {
             }
             const token = jwt.sign(response, 'your_jwt_secret', {
                 expiresIn: '24h',
-                algorithm: 'ES256'
             });
             return res.json({ user: response, token });
         });
