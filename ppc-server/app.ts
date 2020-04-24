@@ -6,7 +6,7 @@ import session from "express-session";
 import passport from "passport";
 
 import indexRouter from "./app/routes/index";
-import usersRouter from "./app/routes/users";
+import usersRouter from "./app/routes/employees";
 import authRouter from "./app/routes/auth";
 
 var sess = {
@@ -28,7 +28,7 @@ import "./app/utils/passportConfig";
 app.use("/auth", authRouter);
 app.use("/", passport.authenticate("jwt", { session: false }), indexRouter);
 app.use(
-  "/users",
+  "/employees",
   passport.authenticate("jwt", { session: false }),
   usersRouter
 );
