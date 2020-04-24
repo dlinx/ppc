@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import session from 'express-session';
 import { configurePassport } from './utils/passport'
+import passport from 'passport';
 
 import indexRouter from './routes/index'
 import usersRouter from './routes/users'
@@ -23,7 +24,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', authRouter);
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', passport.authenticate('jwt', { session: false }), indexRouter);
+app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter);
 
 module.exports = app;

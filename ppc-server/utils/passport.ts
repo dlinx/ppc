@@ -1,5 +1,6 @@
 import passport from 'passport'
 import { Strategy } from 'passport-local'
+import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt'
 
 interface ICredentials {
     [uid: string]: {
@@ -33,3 +34,11 @@ export const configurePassport = () => {
     }))
 }
 
+passport.use(new JWTStrategy({
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: 'your_jwt_secret'
+},
+    function (jwtPayload, cb) {
+        cb(null, jwtPayload);
+    }
+));
