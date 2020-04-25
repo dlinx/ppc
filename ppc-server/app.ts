@@ -4,11 +4,13 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import session from "express-session";
 import passport from "passport";
+import cors from 'cors';
 
 import indexRouter from "./app/routes/index";
 import usersRouter from "./app/routes/employees";
 import authRouter from "./app/routes/auth";
 import { adminAccess } from "./app/utils/authorization";
+
 var sess = {
   secret: "keyboard cat",
   cookie: {},
@@ -16,6 +18,7 @@ var sess = {
 
 const app = express();
 
+app.use(cors())
 app.use(session(sess));
 app.use(morgan("dev"));
 app.use(express.json());

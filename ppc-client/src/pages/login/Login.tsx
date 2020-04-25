@@ -10,9 +10,12 @@ import {
   Theme,
   IconButton,
   Button,
+  FormHelperText,
 } from "@material-ui/core";
-import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { Visibility, VisibilityOff, Label } from "@material-ui/icons";
 import { RouteComponentProps } from "react-router-dom";
+import AsyncButton from "../../components/AsyncButton/AsyncButton";
+import { loginUser } from "../../API/loginUser";
 
 const useStyles = makeStyles((theme: Theme) => ({
   loginCard: {
@@ -43,6 +46,8 @@ const Login: React.FC<Props> = (props) => {
     password: "",
     email: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [errMessage, setErrMessage] = useState("");
 
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
@@ -54,10 +59,19 @@ const Login: React.FC<Props> = (props) => {
     setValues({ ...values, [prop]: event.target.value });
   };
 
-  const login = () => {
-    props.history.push({
-      pathname: "/",
-    });
+  const login = async () => {
+    setIsLoading(true);
+    try {
+      await loginUser(values.email, values.password);
+      props.history.push({
+        pathname: "/",
+      });
+    } catch (e) {
+      setErrMessage(
+        e?.response?.data?.message || e?.message || "Something went wrong"
+      );
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -81,6 +95,7 @@ const Login: React.FC<Props> = (props) => {
             type={values.showPassword ? "text" : "password"}
             value={values.password}
             onChange={handleChange("password")}
+            required={true}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -95,15 +110,19 @@ const Login: React.FC<Props> = (props) => {
             labelWidth={70}
           />
         </FormControl>
-        <Button
+        <div>
+          <FormHelperText error={true}>{errMessage}</FormHelperText>
+        </div>
+        <AsyncButton
           variant="contained"
           color="primary"
           size="large"
           fullWidth
           onClick={() => login()}
+          isLoading={isLoading}
         >
           Login
-        </Button>
+        </AsyncButton>
       </Paper>
     </div>
   );
