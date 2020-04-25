@@ -1,6 +1,6 @@
 import express from 'express'
-import Employee from '../model/employee';
 import { Op } from 'sequelize';
+import Employee from '../model/employee';
 
 const router = express.Router();
 

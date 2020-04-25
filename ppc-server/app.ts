@@ -9,6 +9,7 @@ import cors from 'cors';
 import indexRouter from "./app/routes/index";
 import usersRouter from "./app/routes/employees";
 import authRouter from "./app/routes/auth";
+import reviewsRouter from "./app/routes/reviews";
 import { adminAccess } from "./app/utils/authorization";
 
 var sess = {
@@ -35,5 +36,7 @@ app.use(
   adminAccess,
   usersRouter
 );
+
+app.use('/review', reviewsRouter);
 
 export default app;

@@ -26,6 +26,7 @@ import {
   createEmployee,
   deleteEmployees,
 } from "../../../API/employeeApi";
+import AssignReviewDialog from "../../../components/AssignReviewDialog/AssignReviewDialog";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -43,6 +44,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props extends RouteComponentProps {}
+
 interface INewEmployee {
   name?: string;
   email?: string;
@@ -55,7 +57,7 @@ interface IEmployee extends INewEmployee {
 
 const EmployeeList: React.FC<Props> = (props) => {
   const classes = useStyles();
-  const [users, setUsers] = useState<IEmployee[]>([]);
+  const [employees, setEmployees] = useState<IEmployee[]>([]);
   const [confirmStatus, setConfirmStatus] = useState(false);
   const [info, setInfo] = useState({ visible: false, message: "" });
   const [isSaving, setIsSaving] = useState(false);
@@ -68,10 +70,15 @@ const EmployeeList: React.FC<Props> = (props) => {
   );
   const [deleteCache, setDeleteCache] = useState<string[]>([]);
 
+  const [reviewDialog, setReviewDialog] = useState({
+    visibility: false,
+    uid: "",
+  });
+
   const loadEmployeeList = async () => {
     try {
       const { data } = await GetEmployeeList();
-      setUsers(data);
+      setEmployees(data);
     } catch (e) {
       console.dir(e);
     }
@@ -88,16 +95,19 @@ const EmployeeList: React.FC<Props> = (props) => {
 
   const onDeleteConfirmation = async (result: boolean) => {
     setConfirmStatus(false);
+    if (!result) {
+      setDeleteCache([]);
+      return;
+    }
     try {
       await deleteEmployees(deleteCache);
-      if (result) setInfo({ message: "Employee Deleted", visible: true });
+      setInfo({ message: "Employee Deleted", visible: true });
     } catch (error) {
       console.dir(error);
-      if (result)
-        setInfo({
-          message: error?.message || "Unknown error occured",
-          visible: true,
-        });
+      setInfo({
+        message: error?.message || "Unknown error occured",
+        visible: true,
+      });
     }
     setDeleteCache([]);
     await loadEmployeeList();
@@ -105,6 +115,10 @@ const EmployeeList: React.FC<Props> = (props) => {
 
   const editEmployee = (emp: IEmployee) => {
     setEmpPopup({ data: emp, isOpen: true });
+  };
+
+  const assignReviewer = (uid: string) => {
+    setReviewDialog({ visibility: true, uid });
   };
 
   const onEmployeeUpdate = async (
@@ -128,7 +142,7 @@ const EmployeeList: React.FC<Props> = (props) => {
             password,
           });
           setInfo({ message: "New employee record created.", visible: true });
-          setUsers((users) => {
+          setEmployees((users) => {
             users.push(data);
             return users;
           });
@@ -185,8 +199,8 @@ const EmployeeList: React.FC<Props> = (props) => {
             </ListSubheader>
           }
         >
-          {users &&
-            users.map((emp) => (
+          {employees &&
+            employees.map((emp) => (
               <ListItem key={emp.uid} button onClick={() => showUser(emp.uid)}>
                 <ListItemIcon>
                   <Checkbox
@@ -203,7 +217,7 @@ const EmployeeList: React.FC<Props> = (props) => {
                     <IconButton
                       edge="end"
                       aria-label="Delete"
-                      onClick={() => deleteUser(emp.uid)}
+                      onClick={() => assignReviewer(emp.uid)}
                     >
                       <RateReview />
                     </IconButton>
@@ -268,6 +282,12 @@ const EmployeeList: React.FC<Props> = (props) => {
         dialogStatus={info.visible}
         message={info.message}
         onClose={() => setInfo({ visible: false, message: "" })}
+      />
+      <AssignReviewDialog
+        visible={reviewDialog.visibility}
+        onClose={() => setReviewDialog({ visibility: false, uid: "" })}
+        uid={reviewDialog.uid}
+        employees={employees}
       />
     </>
   );

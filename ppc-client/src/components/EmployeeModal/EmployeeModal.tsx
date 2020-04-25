@@ -130,4 +130,5 @@ const EmployeeModal: React.FC<Props> = (props) => {
     </Dialog>
   );
 };
+
 export default EmployeeModal;
