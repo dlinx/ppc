@@ -20,7 +20,12 @@ import { RouteComponentProps } from "react-router-dom";
 import EmployeeModal from "../../../components/EmployeeModal/EmployeeModal";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import InfoDialog from "../../../components/InfoDialog/InfoDialog";
-import { GetEmployeeList } from "../../../API/employeeApi";
+import {
+  GetEmployeeList,
+  updateEmployee,
+  createEmployee,
+  deleteEmployees,
+} from "../../../API/employeeApi";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -38,28 +43,32 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props extends RouteComponentProps {}
-interface Employee {
-  uid: string;
-  name: string;
-  email: string;
+interface INewEmployee {
+  name?: string;
+  email?: string;
   password?: string;
+}
+
+interface IEmployee extends INewEmployee {
+  uid: string;
 }
 
 const EmployeeList: React.FC<Props> = (props) => {
   const classes = useStyles();
-  const [users, setUsers] = useState<Employee[]>([]);
+  const [users, setUsers] = useState<IEmployee[]>([]);
   const [confirmStatus, setConfirmStatus] = useState(false);
   const [info, setInfo] = useState({ visible: false, message: "" });
   const [isSaving, setIsSaving] = useState(false);
   const [empPopup, setEmpPopup] = useState<{
     isOpen: boolean;
-    data?: Employee;
+    data?: IEmployee;
   }>({ isOpen: false });
   const [selectedList, setSelectedList] = useState<{ [key: string]: boolean }>(
     {}
   );
+  const [deleteCache, setDeleteCache] = useState<string[]>([]);
 
-  const getEmployeeList = async () => {
+  const loadEmployeeList = async () => {
     try {
       const { data } = await GetEmployeeList();
       setUsers(data);
@@ -69,37 +78,72 @@ const EmployeeList: React.FC<Props> = (props) => {
   };
 
   useEffect(() => {
-    getEmployeeList();
+    loadEmployeeList();
   }, []);
 
   const deleteUser = (id: string) => {
+    setDeleteCache([id]);
     setConfirmStatus(true);
   };
 
-  const onDeleteConfirmation = (result: boolean) => {
+  const onDeleteConfirmation = async (result: boolean) => {
     setConfirmStatus(false);
-    if (result) setInfo({ message: "Employee Deleted", visible: true });
+    try {
+      await deleteEmployees(deleteCache);
+      if (result) setInfo({ message: "Employee Deleted", visible: true });
+    } catch (error) {
+      console.dir(error);
+      if (result)
+        setInfo({
+          message: error?.message || "Unknown error occured",
+          visible: true,
+        });
+    }
+    setDeleteCache([]);
+    await loadEmployeeList();
   };
 
-  const editEmployee = (emp: Employee) => {
+  const editEmployee = (emp: IEmployee) => {
     setEmpPopup({ data: emp, isOpen: true });
   };
 
-  const onEmployeeUpdate = (result: boolean) => {
-    if (result) {
-      setIsSaving(true);
-      setTimeout(() => {
+  const onEmployeeUpdate = async (
+    result: boolean,
+    emp: INewEmployee | undefined
+  ) => {
+    try {
+      if (result) {
+        setIsSaving(true);
         const { data } = empPopup;
-        const message = data
-          ? `Employee Information updated.`
-          : `New employee record created.`;
-        setInfo({ message: message, visible: true });
+
+        if (data) {
+          const { name, password, email } = emp || {};
+          await updateEmployee(data.uid, { name, email, password });
+          setInfo({ message: "Employee Information updated.", visible: true });
+        } else {
+          const { name, password, email } = emp || {};
+          const { data } = await createEmployee<IEmployee>({
+            name,
+            email,
+            password,
+          });
+          setInfo({ message: "New employee record created.", visible: true });
+          setUsers((users) => {
+            users.push(data);
+            return users;
+          });
+        }
+
         setEmpPopup({ isOpen: false });
         setIsSaving(false);
-      }, 1000);
-    } else {
-      setEmpPopup({ isOpen: false });
+      } else {
+        setEmpPopup({ isOpen: false });
+      }
+    } catch (error) {
+      setInfo({ message: error?.message || "Unknown error", visible: true });
+      setIsSaving(false);
     }
+    await loadEmployeeList();
   };
 
   const showUser = (id: string) => {
@@ -122,9 +166,11 @@ const EmployeeList: React.FC<Props> = (props) => {
   );
 
   const deleteSelected = () => {
-    setConfirmStatus(true);
     const ids = Object.keys(selectedList).filter((id) => selectedList[id]);
-    console.log("selected for delete", ids);
+    if (ids.length > 0) {
+      setDeleteCache(ids);
+      setConfirmStatus(true);
+    }
   };
 
   return (
@@ -210,7 +256,7 @@ const EmployeeList: React.FC<Props> = (props) => {
       <EmployeeModal
         open={empPopup.isOpen}
         data={empPopup.data}
-        closePopup={(result) => onEmployeeUpdate(result)}
+        closePopup={(result, emp) => onEmployeeUpdate(result, emp)}
         isClosing={isSaving}
       />
       <ConfirmDialog

@@ -35,21 +35,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
 }));
-interface Employee {
-  id?: string;
+interface IEmployee {
+  uid?: string;
   name?: string;
   email?: string;
   password?: string;
 }
 interface Props {
   open: boolean;
-  data?: Employee;
+  data?: IEmployee;
   isClosing?: boolean;
-  closePopup: (result: boolean) => void;
+  closePopup: (result: boolean, emp?: IEmployee) => void;
 }
 const EmployeeModal: React.FC<Props> = (props) => {
   const classes = useStyles();
-  const [newEmployee, setNewEmployee] = useState<Employee>();
+  const [newEmployee, setNewEmployee] = useState<IEmployee>();
   useEffect(() => {
     setNewEmployee(props.data);
   }, [props]);
@@ -74,7 +74,7 @@ const EmployeeModal: React.FC<Props> = (props) => {
             label="Employee ID"
             variant="outlined"
             fullWidth
-            value={newEmployee?.id || ""}
+            value={newEmployee?.uid || ""}
             InputProps={{
               readOnly: true,
             }}
@@ -117,7 +117,7 @@ const EmployeeModal: React.FC<Props> = (props) => {
             color="primary"
             autoFocus
             variant="contained"
-            onClick={() => props.closePopup(true)}
+            onClick={() => props.closePopup(true, newEmployee)}
             disabled={props.isClosing}
           >
             Save
