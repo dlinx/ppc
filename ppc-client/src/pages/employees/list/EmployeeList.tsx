@@ -20,6 +20,7 @@ import { RouteComponentProps } from "react-router-dom";
 import EmployeeModal from "../../../components/EmployeeModal/EmployeeModal";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import InfoDialog from "../../../components/InfoDialog/InfoDialog";
+import { GetEmployeeList } from "../../../API/employeeApi";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -38,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props extends RouteComponentProps {}
 interface Employee {
-  id: string;
+  uid: string;
   name: string;
   email: string;
   password?: string;
@@ -58,18 +59,17 @@ const EmployeeList: React.FC<Props> = (props) => {
     {}
   );
 
-  useEffect(() => {
-    const u = [];
-    for (let i = 0; i < 10; i++) {
-      u.push({
-        id: Math.random().toString().substr(2),
-        name: Math.random().toString(36).substr(2),
-        email: `${Math.random()
-          .toString(36)
-          .substr(2)}@${Math.random().toString(36).substr(2)}.com`,
-      });
+  const getEmployeeList = async () => {
+    try {
+      const { data } = await GetEmployeeList();
+      setUsers(data);
+    } catch (e) {
+      console.dir(e);
     }
-    setUsers(u);
+  };
+
+  useEffect(() => {
+    getEmployeeList();
   }, []);
 
   const deleteUser = (id: string) => {
@@ -141,14 +141,14 @@ const EmployeeList: React.FC<Props> = (props) => {
         >
           {users &&
             users.map((emp) => (
-              <ListItem key={emp.id} button onClick={() => showUser(emp.id)}>
+              <ListItem key={emp.uid} button onClick={() => showUser(emp.uid)}>
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
-                    checked={selectedList[emp.id] || false}
+                    checked={selectedList[emp.uid] || false}
                     tabIndex={-1}
                     disableRipple
-                    onClick={(e) => toggleCheckbox(e, emp.id)}
+                    onClick={(e) => toggleCheckbox(e, emp.uid)}
                   />
                 </ListItemIcon>
                 <ListItemText primary={emp.name} />
@@ -157,7 +157,7 @@ const EmployeeList: React.FC<Props> = (props) => {
                     <IconButton
                       edge="end"
                       aria-label="Delete"
-                      onClick={() => deleteUser(emp.id)}
+                      onClick={() => deleteUser(emp.uid)}
                     >
                       <RateReview />
                     </IconButton>
@@ -175,7 +175,7 @@ const EmployeeList: React.FC<Props> = (props) => {
                     <IconButton
                       edge="end"
                       aria-label="Delete"
-                      onClick={() => deleteUser(emp.id)}
+                      onClick={() => deleteUser(emp.uid)}
                     >
                       <Delete />
                     </IconButton>

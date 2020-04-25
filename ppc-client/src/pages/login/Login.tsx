@@ -9,10 +9,9 @@ import {
   InputAdornment,
   Theme,
   IconButton,
-  Button,
   FormHelperText,
 } from "@material-ui/core";
-import { Visibility, VisibilityOff, Label } from "@material-ui/icons";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { RouteComponentProps } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/AsyncButton";
 import { loginUser } from "../../API/loginUser";

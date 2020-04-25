@@ -4,8 +4,6 @@ import {
   makeStyles,
   Theme,
   CircularProgress,
-  ExtendButtonBase,
-  ButtonTypeMap,
   ButtonProps,
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";

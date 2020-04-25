@@ -9,7 +9,10 @@ export interface IAuthResponse {
         uid: string
     }
 }
-const jwt: IAuthResponse = {}
+const jwt: IAuthResponse = {
+    token: localStorage.getItem('token') || '',
+    user: JSON.parse(localStorage.getItem('user') || '{}')
+}
 
 axios.interceptors.request.use((req) => {
     if (jwt.token)
@@ -20,5 +23,7 @@ axios.interceptors.request.use((req) => {
 export const setAuthResponse = (res: IAuthResponse) => {
     jwt.token = res.token;
     jwt.user = res.user;
+    localStorage.setItem('token', res.token || '')
+    localStorage.setItem('user', JSON.stringify(res.user || {}))
 }
 export default axios;
