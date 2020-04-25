@@ -14,6 +14,7 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
+import { setReviewers } from "../../API/reviewApi";
 
 interface IEmployee {
   uid: string;
@@ -70,8 +71,13 @@ const AssignReviewDialog: React.FC<Props> = (props) => {
   const onClose = async (result: boolean) => {
     setIsClosing(true);
     try {
+      const reviewers = Object.keys(selectedList)
+        .filter((id) => !!selectedList[id])
+        .map((from) => ({ from, to: props.uid }));
+      await setReviewers(reviewers);
     } catch (error) {}
-    setIsClosing(true);
+    setIsClosing(false);
+    setSelectedList({});
     props.onClose(result);
   };
 

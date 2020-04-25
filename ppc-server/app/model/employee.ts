@@ -43,6 +43,7 @@ Employee.init({
     tableName: 'tbl_employee',
     timestamps: true,
     updatedAt: 'updateTimestamp',
+    validate: true
 })
 
 export default Employee;

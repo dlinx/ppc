@@ -1,6 +1,7 @@
+import { Sequelize } from "sequelize";
 import Employee from "../app/model/employee";
 import Review from "../app/model/review";
-import { sequelize } from '../app/utils/db'
+const sequelize = new Sequelize('sqlite:./db/ppc-db.db.sqlite');
 
 const createTables = async () => {
     await Employee.sync({ force: true })
@@ -37,4 +38,6 @@ createTables()
     .then(val => {
         console.log(val)
         console.log('Initial data created')
+    }).catch(err => {
+        console.log(err)
     })

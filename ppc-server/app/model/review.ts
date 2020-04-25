@@ -1,15 +1,15 @@
-const { Model, DataTypes } = require('sequelize');
+const { Model, DataTypes, Sequelize } = require('sequelize');
 import Employee from "./employee";
 import { sequelize } from '../utils/db'
 
 class Review extends Model { }
 Review.init({
     rid: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
-        autoIncrement: true,
         unique: true,
         primaryKey: true,
+        defaultValue: Sequelize.UUIDV4
     },
     responsibility: {
         type: DataTypes.INTEGER,
@@ -39,7 +39,7 @@ Review.init({
     comments: {
         type: DataTypes.STRING(200),
         allowNull: false,
-
+        defaultValue: ''
     },
     from: {
         type: DataTypes.UUID,
@@ -63,6 +63,9 @@ Review.init({
     tableName: 'tbl_review',
     timestamps: true,
     updatedAt: 'updateTimestamp',
+    validate: true
 })
 
+Employee.belongsTo(Review, { foreignKey: 'uid' })
+Review.hasOne(Employee, { sourceKey: 'to', foreignKey: 'uid', as: 'ReviewTo' })
 export default Review

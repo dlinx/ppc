@@ -6,4 +6,7 @@ export const API = {
 
   // Reviews
   REVIEWS: `${SERVER}/review`,
+
+  MY_REVIEW_REQUESTS: `${SERVER}/me/review/requests`,
+  SUBMIT_REVIEW: `${SERVER}/me/review/submit`,
 };

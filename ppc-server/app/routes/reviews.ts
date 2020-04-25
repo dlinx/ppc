@@ -3,26 +3,40 @@ import Review from '../model/review'
 
 const router = express.Router();
 
-
-
 router.get('/:uid', async (req, res) => {
-    const review = await Review.find({ where: { uid: req.params.uid } })
-    res.send(review)
+    try {
+        const review = await Review.find({ where: { uid: req.params.uid } })
+        res.send(review)
+    } catch (error) {
+        res.send(error)
+    }
 });
 
 router.post('/:uid', async (req, res) => {
-    const r = await Review.update({ where: { uid: req.params.uid } })
-    res.send(r)
+    try {
+        const r = await Review.update({ where: { uid: req.params.uid } })
+        res.send(r)
+    } catch (error) {
+        res.send(error)
+    }
 });
 
 router.get('/', async (req, res) => {
-    const reviews = await Review.findAll()
-    res.send(reviews)
+    try {
+        const reviews = await Review.findAll()
+        res.send(reviews)
+    } catch (error) {
+        res.send(error)
+    }
 });
 
 router.post('/', async (req, res) => {
-    const r = await Review.bulkCreate(req.body)
-    res.send(r)
+    try {
+        const r = await Review.bulkCreate(req.body.reviews)
+        res.send(r)
+    } catch (error) {
+        res.status(500).send({ message: error.message })
+    }
 });
 
 

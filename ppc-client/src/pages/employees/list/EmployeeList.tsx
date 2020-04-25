@@ -187,6 +187,11 @@ const EmployeeList: React.FC<Props> = (props) => {
     }
   };
 
+  const onReviewDialogClose = (result: boolean) => {
+    setReviewDialog({ visibility: false, uid: "" });
+    if (result) setInfo({ message: "Reviewers assigned.", visible: true });
+  };
+
   return (
     <>
       <Paper className={classes.container} elevation={3}>
@@ -285,7 +290,7 @@ const EmployeeList: React.FC<Props> = (props) => {
       />
       <AssignReviewDialog
         visible={reviewDialog.visibility}
-        onClose={() => setReviewDialog({ visibility: false, uid: "" })}
+        onClose={(result) => onReviewDialogClose(result)}
         uid={reviewDialog.uid}
         employees={employees}
       />

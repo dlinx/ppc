@@ -10,6 +10,7 @@ import indexRouter from "./app/routes/index";
 import usersRouter from "./app/routes/employees";
 import authRouter from "./app/routes/auth";
 import reviewsRouter from "./app/routes/reviews";
+import meRouter from "./app/routes/me";
 import { adminAccess } from "./app/utils/authorization";
 
 var sess = {
@@ -37,6 +38,8 @@ app.use(
   usersRouter
 );
 
-app.use('/review', reviewsRouter);
+app.use('/review', passport.authenticate("jwt", { session: false }), adminAccess, reviewsRouter);
+
+app.use('/me', passport.authenticate("jwt", { session: false }), meRouter);
 
 export default app;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Paper,
   ExpansionPanel,
@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import ReviewForm from "../../components/ReviewRating/ReviewRating";
 import { ExpandMore } from "@material-ui/icons";
+import { getMyReviewRequests } from "../../API/reviewApi";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -24,19 +25,48 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+interface IReview {
+  rid?: string;
+  responsibility?: number;
+  learningAbility?: number;
+  creativity?: number;
+  punctuality?: number;
+  communication?: number;
+  comments?: string;
+  from?: string;
+  ReviewTo?: {
+    name?: string;
+  };
+}
+
 interface Props {}
 const ReviewRequests: React.FC<Props> = () => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState<number | undefined>(0);
+  const [myReviewRequests, setMyReviewRequests] = useState<IReview[]>([]);
   const setToggle = (num: number) => {
     setExpanded((ex) => (num !== ex ? num : undefined));
   };
+
+  const loadReviewRequests = async () => {
+    try {
+      const { data } = await getMyReviewRequests();
+      setMyReviewRequests(data);
+    } catch (error) {
+      console.dir(error);
+    }
+  };
+
+  useEffect(() => {
+    loadReviewRequests();
+  }, []);
+
   return (
     <Paper className={classes.root}>
       <Typography className={classes.heading}>Review Requests</Typography>
-      {[1, 2, 3, 4, 5].map((v, i) => (
+      {myReviewRequests.map((rev, i) => (
         <ExpansionPanel
-          key={i}
+          key={rev.rid}
           expanded={expanded === i}
           onChange={() => setToggle(i)}
         >
@@ -46,11 +76,11 @@ const ReviewRequests: React.FC<Props> = () => {
             id="panel1a-header"
           >
             <Typography className={classes.heading}>
-              Employee Name {v}
+              {rev?.ReviewTo?.name}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <ReviewForm />
+            <ReviewForm review={rev} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
       ))}

@@ -15,6 +15,9 @@ import {
   makeStyles,
   Theme,
 } from "@material-ui/core";
+
+import { submitReview } from "../../API/reviewApi";
+
 const customIcons: {
   [index: string]: { icon: React.ReactElement; label: string };
 } = {
@@ -83,12 +86,18 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface IReview {
+  rid?: string;
   responsibility?: number;
   learningAbility?: number;
   creativity?: number;
   punctuality?: number;
   communication?: number;
   comments?: string;
+  from?: string;
+  to?: string;
+  ReviewTo?: {
+    name?: string;
+  };
 }
 
 interface IReviewFormProps {
@@ -116,13 +125,14 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
     if (props.readonly) return;
     setReview((r) => {
       const c = { ...r, [field]: value };
-      console.log(1, c);
       return c;
     });
     if (props.onChange) props.onChange(review);
   };
 
-  const onSave = () => {
+  const onSave = async () => {
+    const res = await submitReview(review?.rid || "", review);
+    console.log(res);
     if (props.onSave) props.onSave(review);
   };
 
@@ -135,7 +145,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
     <Box className={classes.root}>
       <ReviewRating
         name="Responsibility"
-        value={review.responsibility}
+        value={review.responsibility || 0}
         onChange={(e, val) => onChange("responsibility", val)}
         readonly={props.readonly}
       >
@@ -143,7 +153,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
       </ReviewRating>
       <ReviewRating
         name="Learning_Ability"
-        value={review.learningAbility}
+        value={review.learningAbility || 0}
         onChange={(e, val) => onChange("learningAbility", val)}
         readonly={props.readonly}
       >
@@ -151,7 +161,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
       </ReviewRating>
       <ReviewRating
         name="Creativity"
-        value={review.creativity}
+        value={review.creativity || 0}
         onChange={(e, val) => onChange("creativity", val)}
         readonly={props.readonly}
       >
@@ -159,7 +169,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
       </ReviewRating>
       <ReviewRating
         name="Punctuality"
-        value={review.punctuality}
+        value={review.punctuality || 0}
         onChange={(e, val) => onChange("punctuality", val)}
         readonly={props.readonly}
       >
@@ -167,7 +177,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
       </ReviewRating>
       <ReviewRating
         name="Communication"
-        value={review.communication}
+        value={review.communication || 0}
         onChange={(e, val) => onChange("communication", val)}
         readonly={props.readonly}
       >
@@ -177,7 +187,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
         label="Additional Comments"
         multiline
         rows={4}
-        value={review.comments}
+        value={review.comments || ""}
         variant="outlined"
         onChange={(e) => onChange("comments", e.target.value)}
         fullWidth
