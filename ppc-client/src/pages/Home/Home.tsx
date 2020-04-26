@@ -65,7 +65,9 @@ const Home: React.FC = () => {
     setReviews(data);
   };
   useEffect(() => {
-    getMyAllReviews();
+    if (user) {
+      getMyAllReviews();
+    }
   }, [user]);
   return (
     <Paper className={classes.root}>

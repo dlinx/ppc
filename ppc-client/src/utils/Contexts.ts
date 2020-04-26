@@ -14,3 +14,13 @@ export const UserContext = createContext<IUserCtx>({
     user: null,
     setUser: (val: any) => { }
 });
+
+interface IInfoDialogContext {
+    infoMessage: string
+    setInfoMessage: (val: string) => void
+}
+
+export const InfoDialogContext = createContext<IInfoDialogContext>({
+    infoMessage: '',
+    setInfoMessage: (msg) => { }
+});

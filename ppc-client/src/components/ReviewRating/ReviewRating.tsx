@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   SentimentVeryDissatisfied,
   SentimentDissatisfied,
@@ -16,9 +16,11 @@ import {
   Theme,
   CircularProgress,
 } from "@material-ui/core";
+import { green } from "@material-ui/core/colors";
+import clsx from "clsx";
 
 import { submitReview } from "../../API/reviewApi";
-import { green } from "@material-ui/core/colors";
+import { InfoDialogContext } from "../../utils/Contexts";
 
 const customIcons: {
   [index: string]: { icon: React.ReactElement; label: string };
@@ -133,6 +135,11 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
   const classes = useStyles();
   const [isClosing, setIsClosing] = useState(false);
   const review = props.review || {};
+  const { setInfoMessage } = useContext(InfoDialogContext);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const buttonClassname = clsx({
+    [classes.buttonSuccess]: hasSubmitted,
+  });
 
   const onChange = (field: string, value: string | number | null) => {
     if (props.readonly) return;
@@ -143,6 +150,8 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
     setIsClosing(true);
     const res = await submitReview(review?.rid || "", review);
     setIsClosing(false);
+    setInfoMessage("Review submitted.");
+    setHasSubmitted(true);
     if (props.onSave) props.onSave(review);
   };
 
@@ -220,6 +229,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
 
           <div className={classes.btnWrapper}>
             <Button
+              className={buttonClassname}
               color="primary"
               autoFocus
               variant="contained"

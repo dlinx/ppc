@@ -27,7 +27,7 @@ import {
   deleteEmployees,
 } from "../../../API/employeeApi";
 import AssignReviewDialog from "../../../components/AssignReviewDialog/AssignReviewDialog";
-import { UserContext } from "../../../utils/Contexts";
+import { UserContext, InfoDialogContext } from "../../../utils/Contexts";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -60,7 +60,6 @@ const EmployeeList: React.FC<Props> = (props) => {
   const classes = useStyles();
   const [employees, setEmployees] = useState<IEmployee[]>([]);
   const [confirmStatus, setConfirmStatus] = useState(false);
-  const [info, setInfo] = useState({ visible: false, message: "" });
   const [isSaving, setIsSaving] = useState(false);
   const [empPopup, setEmpPopup] = useState<{
     isOpen: boolean;
@@ -77,6 +76,7 @@ const EmployeeList: React.FC<Props> = (props) => {
   });
 
   const { user } = useContext(UserContext);
+  const { setInfoMessage } = useContext(InfoDialogContext);
 
   const loadEmployeeList = async () => {
     try {
@@ -104,13 +104,10 @@ const EmployeeList: React.FC<Props> = (props) => {
     }
     try {
       await deleteEmployees(deleteCache);
-      setInfo({ message: "Employee Deleted", visible: true });
+      setInfoMessage("Employee Deleted");
     } catch (error) {
       console.dir(error);
-      setInfo({
-        message: error?.message || "Unknown error occured",
-        visible: true,
-      });
+      setInfoMessage(error?.message || "Unknown error occured");
     }
     setDeleteCache([]);
     await loadEmployeeList();
@@ -136,7 +133,7 @@ const EmployeeList: React.FC<Props> = (props) => {
         if (data) {
           const { name, password, email } = emp || {};
           await updateEmployee(data.uid, { name, email, password });
-          setInfo({ message: "Employee Information updated.", visible: true });
+          setInfoMessage("Employee Information updated.");
         } else {
           const { name, password, email } = emp || {};
           const { data } = await createEmployee<IEmployee>({
@@ -144,7 +141,7 @@ const EmployeeList: React.FC<Props> = (props) => {
             email,
             password,
           });
-          setInfo({ message: "New employee record created.", visible: true });
+          setInfoMessage("New employee record created.");
           setEmployees((emp) => {
             emp.push(data);
             return emp;
@@ -157,7 +154,7 @@ const EmployeeList: React.FC<Props> = (props) => {
         setEmpPopup({ isOpen: false });
       }
     } catch (error) {
-      setInfo({ message: error?.message || "Unknown error", visible: true });
+      setInfoMessage(error?.message || "Unknown error");
       setIsSaving(false);
     }
     await loadEmployeeList();
@@ -192,7 +189,7 @@ const EmployeeList: React.FC<Props> = (props) => {
 
   const onReviewDialogClose = (result: boolean) => {
     setReviewDialog({ visibility: false, uid: "" });
-    if (result) setInfo({ message: "Reviewers assigned.", visible: true });
+    if (result) setInfoMessage("Reviewers assigned.");
   };
 
   return (
@@ -292,11 +289,7 @@ const EmployeeList: React.FC<Props> = (props) => {
         onClose={onDeleteConfirmation}
         message={`Do you want to delete selected employee/s? After confirmation, you can not reverse this process.`}
       />
-      <InfoDialog
-        dialogStatus={info.visible}
-        message={info.message}
-        onClose={() => setInfo({ visible: false, message: "" })}
-      />
+
       <AssignReviewDialog
         visible={reviewDialog.visibility}
         onClose={(result) => onReviewDialogClose(result)}
