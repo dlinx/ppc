@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import {
   Paper,
@@ -14,7 +14,8 @@ import {
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { RouteComponentProps } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/AsyncButton";
-import { loginUser } from "../../API/loginUser";
+import { loginUser } from "../../API/auth";
+import { UserContext } from "../../utils/Contexts";
 
 const useStyles = makeStyles((theme: Theme) => ({
   loginCard: {
@@ -40,6 +41,8 @@ interface State {
 interface Props extends RouteComponentProps {}
 const Login: React.FC<Props> = (props) => {
   const classes = useStyles();
+  const { setUser } = useContext(UserContext);
+
   const [values, setValues] = useState({
     showPassword: false,
     password: "",
@@ -61,7 +64,8 @@ const Login: React.FC<Props> = (props) => {
   const login = async () => {
     setIsLoading(true);
     try {
-      await loginUser(values.email, values.password);
+      const usrData = await loginUser(values.email, values.password);
+      setUser(usrData?.user || null);
       props.history.push({
         pathname: "/",
       });

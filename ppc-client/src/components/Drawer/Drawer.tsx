@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import {
   makeStyles,
   List,
@@ -10,6 +10,8 @@ import {
 } from "@material-ui/core";
 import { Message, Group, ExitToApp } from "@material-ui/icons";
 import { Link } from "react-router-dom";
+import { logoutUser } from "../../API/auth";
+import { UserContext } from "../../utils/Contexts";
 const useStyles = makeStyles({
   list: {
     width: 250,
@@ -21,12 +23,14 @@ interface Props {
   toggleDrawer: (drawerState: boolean) => void;
 }
 const MenuDrawer: React.FC<Props> = (props) => {
+  const { user, setUser } = useContext(UserContext);
   const classes = useStyles();
 
-  const logout = useCallback(() => {
-    console.log("logout");
+  const logout = async () => {
+    await logoutUser();
+    setUser({});
     window.location.href = "/login";
-  }, []);
+  };
 
   return (
     <Drawer
@@ -43,12 +47,14 @@ const MenuDrawer: React.FC<Props> = (props) => {
             </ListItemIcon>
             <ListItemText primary={"Review Requests"} />
           </ListItem>
-          <ListItem button component={Link} to="/employees">
-            <ListItemIcon>
-              <Group />
-            </ListItemIcon>
-            <ListItemText primary={"employees"} />
-          </ListItem>
+          {user?.isAdmin && (
+            <ListItem button component={Link} to="/employees">
+              <ListItemIcon>
+                <Group />
+              </ListItemIcon>
+              <ListItemText primary={"employees"} />
+            </ListItem>
+          )}
         </List>
         <Divider />
         <List>

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router()
 
-router.post('/login', (req, res, next) => {
+router.post('/login', (req, res) => {
     passport.authenticate('local', { session: false }, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json(err)
@@ -20,6 +20,15 @@ router.post('/login', (req, res, next) => {
             return res.json({ user, token });
         });
     })(req, res);
+});
+
+router.get('/logout', (req, res) => {
+    try {
+        req.logout();
+        res.send('User Logged out');
+    } catch (error) {
+        res.status(500).send(error)
+    }
 });
 
 export default router;

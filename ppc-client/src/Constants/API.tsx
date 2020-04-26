@@ -1,6 +1,7 @@
 export const SERVER = `http://localhost:3000`;
 export const API = {
   LOGIN: `${SERVER}/auth/login`,
+  LOGOUT: `${SERVER}/auth/logout`,
   EMPLOYEES: `${SERVER}/employees`,
   DELETE_EMPLOYEES: `${SERVER}/employees/delete`,
 
