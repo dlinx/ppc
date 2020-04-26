@@ -8,7 +8,7 @@ import {
   Divider,
   Drawer,
 } from "@material-ui/core";
-import { Message, Group, ExitToApp } from "@material-ui/icons";
+import { Message, Group, ExitToApp, Home } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { logoutUser } from "../../API/auth";
 import { UserContext } from "../../utils/Contexts";
@@ -41,6 +41,12 @@ const MenuDrawer: React.FC<Props> = (props) => {
     >
       <div className={classes.list} onClick={() => props.toggleDrawer(false)}>
         <List>
+          <ListItem button component={Link} to="/">
+            <ListItemIcon>
+              <Home />
+            </ListItemIcon>
+            <ListItemText primary={"Home"} />
+          </ListItem>
           <ListItem button component={Link} to="/review-requests">
             <ListItemIcon>
               <Message />

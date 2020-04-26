@@ -7,7 +7,10 @@ export const API = {
 
   // Reviews
   REVIEWS: `${SERVER}/review`,
+  REVIEWS_TO: `${SERVER}/review/to`,
 
   MY_REVIEW_REQUESTS: `${SERVER}/me/review/requests`,
+  MY_REVIEWS: `${SERVER}/me/review`,
+
   SUBMIT_REVIEW: `${SERVER}/me/review/submit`,
 };

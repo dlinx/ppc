@@ -43,4 +43,18 @@ router.post('/review/submit/:rid', async (req, res) => {
   }
 });
 
+router.get('/review', async (req: any, res) => {
+  try {
+    const r = await Review.findAll({
+      where: {
+        to: req?.user?.uid
+      },
+      attributes: { exclude: ['from'] }
+    });
+    res.send(r)
+  } catch (error) {
+    res.status(500).send(error)
+  }
+});
+
 export default router;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Paper,
   makeStyles,
@@ -27,6 +27,7 @@ import {
   deleteEmployees,
 } from "../../../API/employeeApi";
 import AssignReviewDialog from "../../../components/AssignReviewDialog/AssignReviewDialog";
+import { UserContext } from "../../../utils/Contexts";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -75,6 +76,8 @@ const EmployeeList: React.FC<Props> = (props) => {
     uid: "",
   });
 
+  const { user } = useContext(UserContext);
+
   const loadEmployeeList = async () => {
     try {
       const { data } = await GetEmployeeList();
@@ -88,7 +91,7 @@ const EmployeeList: React.FC<Props> = (props) => {
     loadEmployeeList();
   }, []);
 
-  const deleteUser = (id: string) => {
+  const deleteEmployee = (id: string) => {
     setDeleteCache([id]);
     setConfirmStatus(true);
   };
@@ -142,9 +145,9 @@ const EmployeeList: React.FC<Props> = (props) => {
             password,
           });
           setInfo({ message: "New employee record created.", visible: true });
-          setEmployees((users) => {
-            users.push(data);
-            return users;
+          setEmployees((emp) => {
+            emp.push(data);
+            return emp;
           });
         }
 
@@ -160,7 +163,7 @@ const EmployeeList: React.FC<Props> = (props) => {
     await loadEmployeeList();
   };
 
-  const showUser = (id: string) => {
+  const showEmployee = (id: string) => {
     props.history.push({
       pathname: `/employees/${id}`,
     });
@@ -206,7 +209,11 @@ const EmployeeList: React.FC<Props> = (props) => {
         >
           {employees &&
             employees.map((emp) => (
-              <ListItem key={emp.uid} button onClick={() => showUser(emp.uid)}>
+              <ListItem
+                key={emp.uid}
+                button
+                onClick={() => showEmployee(emp.uid)}
+              >
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
@@ -236,15 +243,17 @@ const EmployeeList: React.FC<Props> = (props) => {
                       <Edit />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Delete">
-                    <IconButton
-                      edge="end"
-                      aria-label="Delete"
-                      onClick={() => deleteUser(emp.uid)}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </Tooltip>
+                  {user?.uid !== emp.uid && (
+                    <Tooltip title="Delete">
+                      <IconButton
+                        edge="end"
+                        aria-label="Delete"
+                        onClick={() => deleteEmployee(emp.uid)}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </ListItemSecondaryAction>
               </ListItem>
             ))}

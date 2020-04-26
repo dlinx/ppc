@@ -68,4 +68,5 @@ Review.init({
 
 Employee.belongsTo(Review, { foreignKey: 'uid' })
 Review.hasOne(Employee, { sourceKey: 'to', foreignKey: 'uid', as: 'ReviewTo' })
+Review.hasOne(Employee, { sourceKey: 'from', foreignKey: 'uid', as: 'ReviewFrom' })
 export default Review

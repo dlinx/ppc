@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Paper,
   Typography,
@@ -10,8 +10,9 @@ import {
 } from "@material-ui/core";
 import { ExpandMore } from "@material-ui/icons";
 import { RouteComponentProps } from "react-router-dom";
-import ReviewForm from "../../../components/ReviewRating/ReviewRating";
-import { getReviewsFor } from "../../../API/reviewApi";
+import { UserContext } from "../../utils/Contexts";
+import { getMyReviews } from "../../API/reviewApi";
+import ReviewForm from "../../components/ReviewRating/ReviewRating";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -42,11 +43,11 @@ interface IReview {
 
 interface Props extends RouteComponentProps<{ uid: string }> {}
 
-const EmployeeInfo: React.FC<Props> = (props) => {
+const Home: React.FC = () => {
   const classes = useStyles();
   const [reviews, setReviews] = useState<IReview[]>([]);
   const [expanded, setExpanded] = useState<number | undefined>(0);
-
+  const { user } = useContext(UserContext);
   const onChangeReview = (index: number, review: IReview) => {
     setReviews((r) => {
       const revCopy: IReview[] = JSON.parse(JSON.stringify(r));
@@ -58,14 +59,14 @@ const EmployeeInfo: React.FC<Props> = (props) => {
   const setToggle = (num: number) => {
     setExpanded((ex) => (num !== ex ? num : undefined));
   };
-  const getAllReviewsFor = async (uid: string) => {
-    const { data } = await getReviewsFor(uid);
+  const getMyAllReviews = async () => {
+    const { data } = await getMyReviews();
 
     setReviews(data);
   };
   useEffect(() => {
-    getAllReviewsFor(props.match.params.uid);
-  }, []);
+    getMyAllReviews();
+  }, [user]);
   return (
     <Paper className={classes.root}>
       <Typography className={classes.heading}>Reviews Received</Typography>
@@ -80,16 +81,19 @@ const EmployeeInfo: React.FC<Props> = (props) => {
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-            <Typography className={classes.heading}>
-              {rev?.ReviewFrom?.name}
-            </Typography>
+            <Typography className={classes.heading}>Review {i + 1}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <ReviewForm review={rev} onChange={(r) => onChangeReview(i, r)} />
+            <ReviewForm
+              review={rev}
+              onChange={(r) => onChangeReview(i, r)}
+              readonly={true}
+            />
           </ExpansionPanelDetails>
         </ExpansionPanel>
       ))}
     </Paper>
   );
 };
-export default EmployeeInfo;
+
+export default Home;

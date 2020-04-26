@@ -15,6 +15,7 @@ import MenuDrawer from "./components/Drawer/Drawer";
 import { Menu } from "@material-ui/icons";
 import EmployeeInfo from "./pages/Employees/Info/EmployeeInfo";
 import ReviewRequests from "./pages/reviewRequests/ReviewRequests";
+import Home from "./pages/Home/Home";
 import { UserContext, IUser } from "./utils/Contexts";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -74,9 +75,9 @@ function App() {
             exact
           ></Route>
           <Route path="/employees" component={EmployeeList} exact />
-          <Route path="/employees/:id" component={EmployeeInfo} exact></Route>
+          <Route path="/employees/:uid" component={EmployeeInfo} exact></Route>
           <Route path="/login" component={Login}></Route>
-          <Route path="/"></Route>
+          <Route path="/" component={Home}></Route>
         </Switch>
       </UserContext.Provider>
     </Router>

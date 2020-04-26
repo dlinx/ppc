@@ -24,5 +24,10 @@ export const updateReview = (uid: string, review: IReview) =>
 
 export const getMyReviewRequests = () => axios.get(`${API.MY_REVIEW_REQUESTS}`);
 
+export const getMyReviews = () => axios.get(`${API.MY_REVIEWS}`);
+
 export const submitReview = (rid: string, review: IReview) =>
   axios.post(`${API.SUBMIT_REVIEW}/${rid}`, review);
+
+export const getReviewsFor = (uid: string) =>
+  axios.get(`${API.REVIEWS_TO}/${uid}`);
