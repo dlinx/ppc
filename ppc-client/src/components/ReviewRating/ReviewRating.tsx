@@ -14,9 +14,11 @@ import {
   Button,
   makeStyles,
   Theme,
+  CircularProgress,
 } from "@material-ui/core";
 
 import { submitReview } from "../../API/reviewApi";
+import { green } from "@material-ui/core/colors";
 
 const customIcons: {
   [index: string]: { icon: React.ReactElement; label: string };
@@ -83,6 +85,25 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     justifyContent: "flex-end",
   },
+
+  btnWrapper: {
+    margin: theme.spacing(1),
+    position: "relative",
+  },
+  buttonProgress: {
+    color: green[500],
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -12,
+    marginLeft: -12,
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[700],
+    },
+  },
 }));
 
 interface IReview {
@@ -110,74 +131,70 @@ interface IReviewFormProps {
 
 const ReviewForm: React.FC<IReviewFormProps> = (props) => {
   const classes = useStyles();
-  const [review, setReview] = useState<IReview>(
-    props.review || {
-      responsibility: 0,
-      learningAbility: 0,
-      creativity: 0,
-      punctuality: 0,
-      communication: 0,
-      comments: "",
-    }
-  );
+  const [isClosing, setIsClosing] = useState(false);
+  const review = props.review || {};
 
   const onChange = (field: string, value: string | number | null) => {
     if (props.readonly) return;
-    setReview((r) => {
-      const c = { ...r, [field]: value };
-      return c;
-    });
-    if (props.onChange) props.onChange(review);
+    if (props.onChange) props.onChange({ ...review, [field]: value });
   };
 
   const onSave = async () => {
+    setIsClosing(true);
     const res = await submitReview(review?.rid || "", review);
-    console.log(res);
+    setIsClosing(false);
     if (props.onSave) props.onSave(review);
   };
 
   const onCancel = () => {
-    setReview((r) => ({}));
-    if (props.onChange) props.onChange({});
+    if (props.onChange)
+      props.onChange({
+        responsibility: 0,
+        learningAbility: 0,
+        creativity: 0,
+        punctuality: 0,
+        communication: 0,
+        comments: "",
+      });
   };
 
   return (
     <Box className={classes.root}>
       <ReviewRating
-        name="Responsibility"
-        value={review.responsibility || 0}
+        name={`${review.rid}_"Responsibility"`}
+        value={review.responsibility}
         onChange={(e, val) => onChange("responsibility", val)}
         readonly={props.readonly}
       >
         Responsibility
       </ReviewRating>
       <ReviewRating
-        name="Learning_Ability"
-        value={review.learningAbility || 0}
+        name={`${review.rid}_"Learning_Ability"`}
+        value={review.learningAbility}
         onChange={(e, val) => onChange("learningAbility", val)}
         readonly={props.readonly}
       >
         Learning Ability
       </ReviewRating>
       <ReviewRating
-        name="Creativity"
-        value={review.creativity || 0}
+        name={`${review.rid}_"Creativity"`}
+        value={review.creativity}
         onChange={(e, val) => onChange("creativity", val)}
         readonly={props.readonly}
       >
         Creativity
       </ReviewRating>
       <ReviewRating
-        name="Punctuality"
-        value={review.punctuality || 0}
+        name={`${review.rid}_"Punctuality"`}
+        value={review.punctuality}
         onChange={(e, val) => onChange("punctuality", val)}
         readonly={props.readonly}
       >
         Punctuality
       </ReviewRating>
       <ReviewRating
-        name="Communication"
-        value={review.communication || 0}
+        name={`${review.rid}_"Communication"`}
+        value={review.communication}
         onChange={(e, val) => onChange("communication", val)}
         readonly={props.readonly}
       >
@@ -187,7 +204,7 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
         label="Additional Comments"
         multiline
         rows={4}
-        value={review.comments || ""}
+        value={review.comments}
         variant="outlined"
         onChange={(e) => onChange("comments", e.target.value)}
         fullWidth
@@ -200,9 +217,21 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
           <Button variant="text" color="primary" onClick={() => onCancel()}>
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={onSave}>
-            Submit Review
-          </Button>
+
+          <div className={classes.btnWrapper}>
+            <Button
+              color="primary"
+              autoFocus
+              variant="contained"
+              onClick={onSave}
+              disabled={isClosing}
+            >
+              Submit Review
+            </Button>
+            {isClosing && (
+              <CircularProgress size={24} className={classes.buttonProgress} />
+            )}
+          </div>
         </Box>
       )}
     </Box>

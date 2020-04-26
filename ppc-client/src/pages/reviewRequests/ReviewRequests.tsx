@@ -61,6 +61,14 @@ const ReviewRequests: React.FC<Props> = () => {
     loadReviewRequests();
   }, []);
 
+  const onChangeReview = (index: number, review: IReview) => {
+    setMyReviewRequests((r) => {
+      const revCopy: IReview[] = JSON.parse(JSON.stringify(r));
+      revCopy[index] = review;
+      return revCopy;
+    });
+  };
+
   return (
     <Paper className={classes.root}>
       <Typography className={classes.heading}>Review Requests</Typography>
@@ -80,11 +88,12 @@ const ReviewRequests: React.FC<Props> = () => {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <ReviewForm review={rev} />
+            <ReviewForm review={rev} onChange={(r) => onChangeReview(i, r)} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
       ))}
     </Paper>
   );
 };
+
 export default ReviewRequests;
