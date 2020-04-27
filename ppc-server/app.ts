@@ -20,7 +20,10 @@ var sess = {
 
 const app = express();
 
-app.use(cors())
+if (process?.env?.NODE_ENV === 'development') {
+  app.use(cors());
+}
+
 app.use(session(sess));
 app.use(morgan("dev"));
 app.use(express.json());

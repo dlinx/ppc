@@ -5,6 +5,5 @@ services:
     ports:
       - 3001:3000
     environment:
-      API_SERVER: "http://localhost:8080"
       JWT_SECRET: PPC_JWT_SECRET
       SESSION_SECRET: PPC_SESSION_SECRET
