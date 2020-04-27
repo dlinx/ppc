@@ -1,11 +1,9 @@
 kind: pipeline
-type: docker
 name: default
 steps:
   - name: client
-    image: node
-    commands:
-      - cd ppc-client
-      - ls
-      - npm install
-      - npm run build
+    image: plugins/docker:18.09
+    environment:
+      DOCKER_BUILDKIT: 1
+    setting:
+      target: production
