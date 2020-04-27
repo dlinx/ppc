@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Login from "./pages/Login/Login";
-import EmployeeList from "./pages/Employees/List/EmployeeList";
 import {
   AppBar,
   Toolbar,
@@ -11,13 +9,17 @@ import {
   Button,
   Theme,
 } from "@material-ui/core";
-import MenuDrawer from "./components/Drawer/Drawer";
 import { Menu } from "@material-ui/icons";
+
+import { UserContext, IUser, InfoDialogContext } from "./utils/Contexts";
+import InfoDialog from "./components/InfoDialog/InfoDialog";
+import MenuDrawer from "./components/Drawer/Drawer";
+
+import Login from "./pages/Login/Login";
+import EmployeeList from "./pages/Employees/List/EmployeeList";
 import EmployeeInfo from "./pages/Employees/Info/EmployeeInfo";
 import ReviewRequests from "./pages/reviewRequests/ReviewRequests";
 import Home from "./pages/Home/Home";
-import { UserContext, IUser, InfoDialogContext } from "./utils/Contexts";
-import InfoDialog from "./components/InfoDialog/InfoDialog";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
