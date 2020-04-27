@@ -48,7 +48,7 @@ function App() {
         <UserContext.Provider value={{ user, setUser }}>
           <AppBar position="static">
             <Toolbar>
-              {user && (
+              {user?.uid && (
                 <>
                   <IconButton
                     edge="start"

@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+const api = axios.create()
+
 export interface IAuthResponse {
     token?: string
     user?: {
@@ -14,11 +16,18 @@ const jwt: IAuthResponse = {
     user: JSON.parse(localStorage.getItem('user') || '{}')
 }
 
-axios.interceptors.request.use((req) => {
+api.interceptors.request.use((req) => {
     if (jwt.token)
         req.headers['Authorization'] = `Bearer ${jwt.token}`;
     return req
 });
+
+api.interceptors.response.use(res => res, (err) => {
+    if (err.response.status === 401) {
+        window.location.href = '/login';
+    }
+    return Promise.reject(err);
+})
 
 export const setAuthResponse = (res: IAuthResponse) => {
     jwt.token = res.token;
@@ -26,4 +35,6 @@ export const setAuthResponse = (res: IAuthResponse) => {
     localStorage.setItem('token', res.token || '')
     localStorage.setItem('user', JSON.stringify(res.user || {}))
 }
-export default axios;
+
+
+export default api;

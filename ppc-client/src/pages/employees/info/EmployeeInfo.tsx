@@ -65,7 +65,7 @@ const EmployeeInfo: React.FC<Props> = (props) => {
   };
   useEffect(() => {
     getAllReviewsFor(props.match.params.uid);
-  }, []);
+  }, [props.match.params.uid]);
   return (
     <Paper className={classes.root}>
       <Typography className={classes.heading}>Reviews Received</Typography>

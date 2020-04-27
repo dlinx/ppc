@@ -148,23 +148,11 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
 
   const onSave = async () => {
     setIsClosing(true);
-    const res = await submitReview(review?.rid || "", review);
+    await submitReview(review?.rid || "", review);
     setIsClosing(false);
     setInfoMessage("Review submitted.");
     setHasSubmitted(true);
     if (props.onSave) props.onSave(review);
-  };
-
-  const onCancel = () => {
-    if (props.onChange)
-      props.onChange({
-        responsibility: 0,
-        learningAbility: 0,
-        creativity: 0,
-        punctuality: 0,
-        communication: 0,
-        comments: "",
-      });
   };
 
   return (
@@ -223,10 +211,6 @@ const ReviewForm: React.FC<IReviewFormProps> = (props) => {
       />
       {!props.readonly && (
         <Box className={classes.wrapper}>
-          <Button variant="text" color="primary" onClick={() => onCancel()}>
-            Cancel
-          </Button>
-
           <div className={classes.btnWrapper}>
             <Button
               className={buttonClassname}

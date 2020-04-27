@@ -19,7 +19,6 @@ import { Delete, Edit, PersonAdd, RateReview } from "@material-ui/icons";
 import { RouteComponentProps } from "react-router-dom";
 import EmployeeModal from "../../../components/EmployeeModal/EmployeeModal";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
-import InfoDialog from "../../../components/InfoDialog/InfoDialog";
 import {
   GetEmployeeList,
   updateEmployee,
