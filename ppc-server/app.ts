@@ -14,7 +14,7 @@ import meRouter from "./app/routes/me";
 import { adminAccess } from "./app/utils/authorization";
 
 var sess = {
-  secret: "keyboard cat",
+  secret: process.env.SESSION_SECRET || '',
   cookie: {},
 };
 
@@ -26,11 +26,9 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
 import "./app/utils/passportConfig";
 
 app.use("/auth", authRouter);
-app.use("/", passport.authenticate("jwt", { session: false }), indexRouter);
 app.use(
   "/employees",
   passport.authenticate("jwt", { session: false }),
@@ -41,5 +39,8 @@ app.use(
 app.use('/review', passport.authenticate("jwt", { session: false }), adminAccess, reviewsRouter);
 
 app.use('/me', passport.authenticate("jwt", { session: false }), meRouter);
+
+app.use(express.static(path.join(__dirname, "public")));
+app.get('*', (req, res) => res.sendFile('index.html', { root: path.join(__dirname, 'public') }));
 
 export default app;

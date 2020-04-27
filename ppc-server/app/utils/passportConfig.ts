@@ -18,7 +18,7 @@ passport.use(new Strategy({
 
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: 'your_jwt_secret'
+    secretOrKey: process.env.JWT_SECRET || ''
 },
     function (jwtPayload, cb) {
         cb(null, jwtPayload);

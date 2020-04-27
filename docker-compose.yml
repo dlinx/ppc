@@ -1,14 +1,10 @@
 version: "2.0"
 services:
-  db:
-    image: mariadb
-    restart: always
+  ppc:
+    build: .
     ports:
-      - "3306:3306"
+      - 3001:3000
     environment:
-      MYSQL_ROOT_PASSWORD: toor
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8090:8080
+      API_SERVER: "http://localhost:8080"
+      JWT_SECRET: PPC_JWT_SECRET
+      SESSION_SECRET: PPC_SESSION_SECRET

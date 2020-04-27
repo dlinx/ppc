@@ -1,4 +1,6 @@
-export const SERVER = `http://localhost:3000`;
+export const SERVER =
+  process.env.NODE_ENV !== "development" ? "" : `http://localhost:3000`;
+
 export const API = {
   LOGIN: `${SERVER}/auth/login`,
   LOGOUT: `${SERVER}/auth/logout`,
